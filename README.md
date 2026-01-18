@@ -2,8 +2,6 @@
 
 ## TODO
 
-- [ ] Terraform LSPの設定を追加
-
 ## インストールが必須なもの
 
 - Zinit
@@ -14,7 +12,7 @@
 1. リポジトリをクローン
 
 ```bash
-cd ~ && git clone https://github.com/rom6621/dotfiles.git
+cd ~ && git clone https://github.com/ytask/dotfiles.git
 cd dotfiles
 ```
 
