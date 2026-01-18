@@ -3,6 +3,9 @@ local opt = vim.opt
 
 vim.api.nvim_create_augroup("my_nvim_rc", { clear = true })
 
+-- TrueColor対応
+opt.termguicolors = true
+
 -- 行番号の表示
 opt.number = true
 opt.relativenumber = true
