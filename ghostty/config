@@ -1,4 +1,5 @@
 theme = Dracula
+background-opacity = 0.88
 
 font-family = "HackGen35 Console NF"
 font-size = 18
