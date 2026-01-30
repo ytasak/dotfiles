@@ -72,16 +72,6 @@ func main() {
 		}
 	}
 
-	// Zinitの確認
-	fmt.Println("\n🔍 Zinit の確認...")
-	zinitPath := filepath.Join(homeDir, ".local/share/zinit/zinit.git/zinit.zsh")
-	if _, err := os.Stat(zinitPath); os.IsNotExist(err) {
-		fmt.Println("⚠️  Zinit はまだインストールされていません")
-		fmt.Println("   初回 zsh 起動時に自動インストールされます")
-	} else {
-		fmt.Println("✅ Zinit がインストール済み")
-	}
-
 	// .zshrc.local のセットアップ案内
 	fmt.Println("\n💡 オプション: ローカル設定ファイル")
 	zshrcLocal := filepath.Join(homeDir, ".zshrc.local")

@@ -1,6 +1,7 @@
 brew "helix"
 brew "htop"
 brew "mise"
+brew "zinit"
 brew "postgresql@17"
 brew "tree"
 brew "yazi"

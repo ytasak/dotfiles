@@ -2,10 +2,10 @@
 
 ## TODO
 
-## インストールが必須なもの
+## 前提条件
 
-- Zinit
-- mise
+- Homebrew
+- Go（install.go実行用）
 
 ## 初期化方法
 
