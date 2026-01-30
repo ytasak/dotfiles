@@ -14,7 +14,7 @@ bindkey '^R' history-incremental-search-backward
 # ============================================================================
 # Zinit - Plugin Manager
 # ============================================================================
-source /opt/homebrew/share/zinit/zinit.zsh
+source /opt/homebrew/opt/zinit/zinit.zsh
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
@@ -52,4 +52,4 @@ eval "$(mise activate zsh)"
 # Local Configuration
 # ============================================================================
 # ローカル設定の読み込み（シークレット情報など、gitで管理しない）
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local || true
