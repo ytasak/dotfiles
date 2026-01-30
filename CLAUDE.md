@@ -17,14 +17,22 @@ zsh、開発ツールの設定を管理する個人用dotfilesリポジトリ。
 
 - `macos-option-as-alt = true` でOptionキーをAlt/Metaとして使用
 
+### Zellij設定 (zellij/)
+
+- カスタムキーバインド（vim風）
+- IDEレイアウト（helix + claude）
+
+### Helix設定 (helix/)
+
+- `Ctrl+y` でyaziファイルピッカーを起動
+- zellij連携スクリプト
+
 ## セットアップ
 
-シンボリックリンクで`~/.config`に配置：
+インストールスクリプトを実行：
 
 ```bash
-ln -s ~/dotfiles/.zshrc ~
-ln -s ~/dotfiles/ghostty ~/.config
-ln -s ~/dotfiles/mise ~/.config
+./install.sh
 ```
 
 ## タスク管理
