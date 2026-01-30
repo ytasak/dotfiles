@@ -17,7 +17,7 @@ error()   { echo "❌ $*" >&2; exit 1; }
 # パス設定
 # ============================================================================
 HOME_DIR="$HOME"
-DOTFILES_DIR="$HOME_DIR/dotfiles"
+DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONFIG_DIR="$HOME_DIR/.config"
 CLAUDE_DIR="$HOME_DIR/.claude"
 SSH_DIR="$HOME_DIR/.ssh"
