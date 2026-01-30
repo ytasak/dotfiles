@@ -1,7 +1,7 @@
 theme = "dracula"
 
 [editor]
-clipboard-provider = "system"
+clipboard-provider = "pasteboard"
 line-number = "relative"
 cursorline = true
 auto-save = true
