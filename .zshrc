@@ -7,8 +7,6 @@ export LC_CTYPE=ja_JP.UTF-8
 # ============================================================================
 # Aliases
 # ============================================================================
-alias vim="nvim"
-
 bindkey -v
 bindkey '^R' history-incremental-search-backward
 

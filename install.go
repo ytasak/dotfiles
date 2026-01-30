@@ -44,8 +44,6 @@ func main() {
 	symlinks := map[string]string{
 		".zshrc":               filepath.Join(homeDir, ".zshrc"),
 		"ghostty":              filepath.Join(configDir, "ghostty"),
-		"nvim":                 filepath.Join(configDir, "nvim"),
-		"tmux":                 filepath.Join(configDir, "tmux"),
 		"mise":                 filepath.Join(configDir, "mise"),
 		"claude/CLAUDE.md":     filepath.Join(claudeDir, "CLAUDE.md"),
 		"claude/settings.json": filepath.Join(claudeDir, "settings.json"),
@@ -82,24 +80,6 @@ func main() {
 		fmt.Println("   初回 zsh 起動時に自動インストールされます")
 	} else {
 		fmt.Println("✅ Zinit がインストール済み")
-	}
-
-	// TPM (Tmux Plugin Manager) のインストール
-	fmt.Println("\n🔌 TPM (Tmux Plugin Manager) のセットアップ...")
-	tpmDir := filepath.Join(configDir, "tmux/plugins/tpm")
-	if _, err := os.Stat(tpmDir); os.IsNotExist(err) {
-		fmt.Println("TPM をクローンしています...")
-		if !commandExists("git") {
-			fmt.Println("⚠️  git がインストールされていません")
-		} else if err := runCommand("git", "clone", "https://github.com/tmux-plugins/tpm", tpmDir); err != nil {
-			fmt.Printf("⚠️  TPM のクローンに失敗: %v\n", err)
-		} else {
-			fmt.Println("✅ TPM をインストールしました")
-			installPlugins(tpmDir)
-		}
-	} else {
-		fmt.Println("✅ TPM がインストール済み")
-		installPlugins(tpmDir)
 	}
 
 	// .zshrc.local のセットアップ案内
@@ -144,19 +124,6 @@ func runCommand(name string, args ...string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
-}
-
-func installPlugins(tpmDir string) {
-	installScript := filepath.Join(tpmDir, "bin/install_plugins")
-	if _, err := os.Stat(installScript); err == nil {
-		fmt.Println("プラグインをインストールしています...")
-		if err := runCommand(installScript); err != nil {
-			fmt.Printf("⚠️  プラグインインストールに失敗: %v\n", err)
-			fmt.Println("   tmux 起動後に `Prefix + I` で手動インストールしてください")
-		} else {
-			fmt.Println("✅ tmux プラグインのインストール完了")
-		}
-	}
 }
 
 func fatal(format string, args ...interface{}) {
