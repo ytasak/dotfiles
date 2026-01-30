@@ -1,0 +1,123 @@
+# Helix Language Server設定
+# https://docs.helix-editor.com/languages.html
+
+# ============================================================================
+# TypeScript / JavaScript
+# ============================================================================
+[[language]]
+name = "typescript"
+language-servers = ["vtsls"]
+auto-format = true
+formatter = { command = "biome", args = ["format", "--stdin-file-path", "file.ts"] }
+
+[[language]]
+name = "javascript"
+language-servers = ["vtsls"]
+auto-format = true
+formatter = { command = "biome", args = ["format", "--stdin-file-path", "file.js"] }
+
+[[language]]
+name = "tsx"
+language-servers = ["vtsls"]
+auto-format = true
+formatter = { command = "biome", args = ["format", "--stdin-file-path", "file.tsx"] }
+
+[[language]]
+name = "jsx"
+language-servers = ["vtsls"]
+auto-format = true
+formatter = { command = "biome", args = ["format", "--stdin-file-path", "file.jsx"] }
+
+# ============================================================================
+# Go
+# ============================================================================
+[[language]]
+name = "go"
+language-servers = ["gopls"]
+auto-format = true
+formatter = { command = "gofmt" }
+
+# ============================================================================
+# Python
+# ============================================================================
+[[language]]
+name = "python"
+language-servers = ["pyright", "ruff"]
+auto-format = true
+formatter = { command = "ruff", args = ["format", "-"] }
+
+# ============================================================================
+# Java
+# ============================================================================
+[[language]]
+name = "java"
+language-servers = ["jdtls"]
+auto-format = true
+
+[language-server.jdtls]
+command = "jdtls"
+
+# ============================================================================
+# Lua
+# ============================================================================
+[[language]]
+name = "lua"
+language-servers = ["lua-language-server"]
+auto-format = true
+
+# ============================================================================
+# JSON
+# ============================================================================
+[[language]]
+name = "json"
+language-servers = ["vscode-json-language-server"]
+auto-format = true
+formatter = { command = "biome", args = ["format", "--stdin-file-path", "file.json"] }
+
+# ============================================================================
+# HTML / CSS
+# ============================================================================
+[[language]]
+name = "html"
+language-servers = ["vscode-html-language-server"]
+auto-format = true
+formatter = { command = "prettier", args = ["--parser", "html"] }
+
+[[language]]
+name = "css"
+language-servers = ["vscode-css-language-server"]
+auto-format = true
+formatter = { command = "prettier", args = ["--parser", "css"] }
+
+# ============================================================================
+# Language Server 設定
+# ============================================================================
+[language-server.vtsls]
+command = "vtsls"
+args = ["--stdio"]
+
+[language-server.gopls]
+command = "gopls"
+
+[language-server.pyright]
+command = "pyright-langserver"
+args = ["--stdio"]
+
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
+
+[language-server.lua-language-server]
+command = "lua-language-server"
+
+[language-server.vscode-json-language-server]
+command = "vscode-json-language-server"
+args = ["--stdio"]
+
+[language-server.vscode-html-language-server]
+command = "vscode-html-language-server"
+args = ["--stdio"]
+
+[language-server.vscode-css-language-server]
+command = "vscode-css-language-server"
+args = ["--stdio"]

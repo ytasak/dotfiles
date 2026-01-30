@@ -1,4 +1,5 @@
 brew "helix"
+brew "jdtls"
 brew "htop"
 brew "mise"
 brew "zinit"
