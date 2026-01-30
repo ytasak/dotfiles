@@ -40,8 +40,9 @@ zinit ice pick"async.zsh" src"pure.zsh"
 zinit light sindresorhus/pure
 
 # ============================================================================
-# Homebrew keg-only packages
+# PATH
 # ============================================================================
+export PATH="$HOME/.local/bin:$PATH"
 export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
 
 # ============================================================================

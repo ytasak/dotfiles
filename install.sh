@@ -21,6 +21,7 @@ DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONFIG_DIR="$HOME_DIR/.config"
 CLAUDE_DIR="$HOME_DIR/.claude"
 SSH_DIR="$HOME_DIR/.ssh"
+LOCAL_BIN_DIR="$HOME_DIR/.local/bin"
 
 # ============================================================================
 # シンボリックリンク作成関数
@@ -114,6 +115,7 @@ fi
 mkdir -p "$CONFIG_DIR"
 mkdir -p "$CLAUDE_DIR"
 mkdir -p "$SSH_DIR" && chmod 700 "$SSH_DIR"
+mkdir -p "$LOCAL_BIN_DIR"
 
 # ----------------------------------------------------------------------------
 # シンボリックリンクの作成
@@ -135,6 +137,9 @@ create_symlink "claude/settings.json" "$CLAUDE_DIR/settings.json"
 
 # SSH設定
 create_symlink "ssh/config" "$SSH_DIR/config"
+
+# カスタムスクリプト
+create_symlink "bin/ide" "$LOCAL_BIN_DIR/ide"
 
 # ----------------------------------------------------------------------------
 # miseによるツールインストール

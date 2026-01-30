@@ -1,0 +1,22 @@
+#!/bin/bash
+
+selected=$(find "$HOME/Develop" -maxdepth 3 -name ".git" 2>/dev/null | xargs -n1 dirname | sort -u | fzf --prompt="Project > ")
+
+if [[ -z "$selected" ]]; then
+    echo "No project selected"
+    exit 0
+fi
+
+project_name=$(basename "$selected")
+branch=$(cd "$selected" && git branch --show-current 2>/dev/null || echo "main")
+session_name="${project_name}:${branch//\//-}"
+
+# セッション名を30文字に切り詰め（macOS対応）
+session_name="${session_name:0:30}"
+
+if [[ -n "$ZELLIJ" ]]; then
+    zellij action detach
+fi
+
+cd "$selected"
+zellij attach "$session_name" 2>/dev/null || zellij -s "$session_name"
