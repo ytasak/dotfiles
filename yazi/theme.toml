@@ -1,0 +1,5 @@
+# Yazi Dracula Theme
+# https://github.com/dracula/yazi
+
+[flavor]
+use = "dracula"

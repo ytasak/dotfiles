@@ -1,0 +1,12 @@
+# Yazi設定
+# https://yazi-rs.github.io/docs/configuration/yazi
+
+[manager]
+show_hidden = true
+sort_by = "natural"
+sort_dir_first = true
+
+[opener]
+edit = [
+  { run = 'hx "$@"', block = true, for = "unix" },
+]

@@ -127,6 +127,7 @@ create_symlink "ghostty" "$CONFIG_DIR/ghostty"
 create_symlink "mise"    "$CONFIG_DIR/mise"
 create_symlink "zellij"  "$CONFIG_DIR/zellij"
 create_symlink "helix"   "$CONFIG_DIR/helix"
+create_symlink "yazi"    "$CONFIG_DIR/yazi"
 
 # Claude Code設定
 create_symlink "claude/CLAUDE.md"     "$CLAUDE_DIR/CLAUDE.md"
@@ -149,6 +150,26 @@ else
         info "mise ツールのインストール完了"
     else
         warn "mise install に失敗"
+    fi
+fi
+
+# ----------------------------------------------------------------------------
+# Yazi Dracula flavorのインストール
+# ----------------------------------------------------------------------------
+echo ""
+echo "🎨 Yazi Dracula テーマをインストールします..."
+
+YAZI_FLAVORS_DIR="$CONFIG_DIR/yazi/flavors"
+DRACULA_FLAVOR_DIR="$YAZI_FLAVORS_DIR/dracula.yazi"
+
+if [[ -d "$DRACULA_FLAVOR_DIR" ]]; then
+    info "Yazi Dracula flavor は既にインストールされています"
+else
+    mkdir -p "$YAZI_FLAVORS_DIR"
+    if git clone https://github.com/dracula/yazi.git "$DRACULA_FLAVOR_DIR" 2>/dev/null; then
+        info "Yazi Dracula flavor のインストール完了"
+    else
+        warn "Yazi Dracula flavor のインストールに失敗"
     fi
 fi
 
