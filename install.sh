@@ -74,6 +74,41 @@ if [[ ! -d "$DOTFILES_DIR" ]]; then
 fi
 
 # ----------------------------------------------------------------------------
+# Homebrewのインストール
+# ----------------------------------------------------------------------------
+echo ""
+echo "🍺 Homebrew をセットアップします..."
+
+if ! command_exists brew; then
+    echo "Homebrew をインストールしています..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    info "Homebrew のインストール完了"
+else
+    info "Homebrew は既にインストールされています"
+fi
+
+# Apple Silicon Mac用のPATH設定（現在のシェルセッションに適用）
+if [[ -f /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# ----------------------------------------------------------------------------
+# Brewfileからツールをインストール
+# ----------------------------------------------------------------------------
+echo ""
+echo "📦 Brewfile からツールをインストールします..."
+
+if [[ -f "$DOTFILES_DIR/Brewfile" ]]; then
+    if brew bundle --file="$DOTFILES_DIR/Brewfile"; then
+        info "Brewfile のインストール完了"
+    else
+        warn "brew bundle に失敗（一部のパッケージがインストールできなかった可能性があります）"
+    fi
+else
+    warn "Brewfile が見つかりません: $DOTFILES_DIR/Brewfile"
+fi
+
+# ----------------------------------------------------------------------------
 # 必要なディレクトリの作成
 # ----------------------------------------------------------------------------
 mkdir -p "$CONFIG_DIR"
