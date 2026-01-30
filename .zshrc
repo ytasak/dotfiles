@@ -33,6 +33,9 @@ zinit light zsh-users/zsh-completions
 
 autoload -Uz compinit && compinit
 
+# 補完で大文字小文字を区別しない
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
 zinit ice pick"async.zsh" src"pure.zsh"
 zinit light sindresorhus/pure
 
