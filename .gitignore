@@ -1,3 +1,6 @@
 # ローカル設定ファイル（シークレット情報を含む）
 .zshrc.local
 **/.DS_Store
+
+# 外部からcloneするテーマ
+yazi/flavors/
