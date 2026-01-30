@@ -4,7 +4,7 @@
 [tools]
 # Language runtimes
 node = "24.9.0"
-go = "1.25.4"
+go = "latest"
 python = "3.12"
 uv = "latest"
 terraform = "latest"
