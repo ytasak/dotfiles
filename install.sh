@@ -189,9 +189,17 @@ if [[ ! -f "$ZSHRC_LOCAL" ]]; then
     echo "GitHub Tokenなどの秘密情報を設定する場合:"
     echo "  cp $DOTFILES_DIR/.zshrc.local.example $ZSHRC_LOCAL"
     echo "  chmod 600 $ZSHRC_LOCAL"
-    echo "  # エディタで編集してGITHUB_TOKENなどを設定"
 else
     info "~/.zshrc.local が既に存在します"
+fi
+
+SSH_CONFIG_LOCAL="$SSH_DIR/config.local"
+if [[ ! -f "$SSH_CONFIG_LOCAL" ]]; then
+    echo "SSH のローカル設定を追加する場合:"
+    echo "  cp $DOTFILES_DIR/ssh/config.local.example $SSH_CONFIG_LOCAL"
+    echo "  chmod 600 $SSH_CONFIG_LOCAL"
+else
+    info "~/.ssh/config.local が既に存在します"
 fi
 
 # ----------------------------------------------------------------------------
