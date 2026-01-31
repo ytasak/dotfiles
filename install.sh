@@ -141,6 +141,9 @@ create_symlink "ssh/config" "$SSH_DIR/config"
 # カスタムスクリプト
 create_symlink "bin/ide" "$LOCAL_BIN_DIR/ide"
 
+# Hammerspoon設定
+create_symlink "hammerspoon" "$HOME_DIR/.hammerspoon"
+
 # ----------------------------------------------------------------------------
 # miseによるツールインストール
 # ----------------------------------------------------------------------------

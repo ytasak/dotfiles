@@ -1,3 +1,5 @@
+tap "laishulu/homebrew"
+
 brew "helix"
 brew "jdtls"
 brew "htop"
@@ -21,5 +23,7 @@ cask "codex"
 cask "font-hackgen"
 cask "font-hackgen-nerd"
 cask "ghostty"
+cask "hammerspoon"
+brew "macism"
 cask "google-chrome"
 cask "slack"
