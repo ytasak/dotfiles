@@ -1,5 +1,7 @@
 # Dotfiles
 
+macOS (Apple Silicon) 専用
+
 ## TODO
 
 ## 初期化方法
