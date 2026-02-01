@@ -2,6 +2,7 @@ tap "laishulu/homebrew"
 
 brew "helix"
 brew "jdtls"
+brew "google-java-format"
 brew "htop"
 brew "mise"
 brew "zinit"

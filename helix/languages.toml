@@ -53,6 +53,7 @@ formatter = { command = "ruff", args = ["format", "-"] }
 name = "java"
 language-servers = ["jdtls"]
 auto-format = true
+formatter = { command = "google-java-format", args = ["-"] }
 
 [language-server.jdtls]
 command = "jdtls"
