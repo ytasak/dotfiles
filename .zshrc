@@ -30,6 +30,8 @@ zinit light-mode for \
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
+zinit light chrissicool/zsh-256color
+zinit light zdharma/history-search-multi-word
 
 autoload -Uz compinit && compinit
 
