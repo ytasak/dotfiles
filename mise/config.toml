@@ -37,8 +37,6 @@ atlas = "latest"
 aws-cli = "latest"
 "aqua:99designs/aws-vault" = "latest"
 gcloud = "latest"
-lazygit = "latest"
-gh = "latest"
 jq = "latest"
 
 # Git hooks & security
