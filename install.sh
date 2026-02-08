@@ -138,8 +138,6 @@ create_symlink "claude/settings.json" "$CLAUDE_DIR/settings.json"
 # SSH設定
 create_symlink "ssh/config" "$SSH_DIR/config"
 
-# カスタムスクリプト
-create_symlink "bin/ide" "$LOCAL_BIN_DIR/ide"
 
 # ----------------------------------------------------------------------------
 # miseによるツールインストール
