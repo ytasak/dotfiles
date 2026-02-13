@@ -13,7 +13,13 @@ if [[ -s "$tmp" ]]; then
     rm -f "$tmp"
     zellij action toggle-floating-panes
     zellij action write 27
-    zellij action write-chars ":open \"$paths\""
+
+    if [[ -d "$paths" ]]; then
+        # ディレクトリの場合は :cd で作業ディレクトリを変更
+        zellij action write-chars ":cd \"$paths\""
+    else
+        zellij action write-chars ":open \"$paths\""
+    fi
     zellij action write 13
 else
     rm -f "$tmp"

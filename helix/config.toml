@@ -26,6 +26,10 @@ C-y = ":sh zellij run -n Yazi -c -f -x 10%% -y 10%% --width 80%% --height 80%% -
 R = ":reload"
 "esc" = ":sh macism com.apple.keylayout.ABC"
 
+[keys.normal.space]
+f = ":sh zellij run -n Yazi -c -f -x 10%% -y 10%% --width 80%% --height 80%% -- bash ~/.config/helix/yazi-picker.sh"
+F = ":sh zellij run -n Yazi -c -f -x 10%% -y 10%% --width 80%% --height 80%% -- bash ~/.config/helix/yazi-picker.sh"
+
 [keys.insert]
 "esc" = ["normal_mode", ":sh /opt/homebrew/bin/macism com.apple.keylayout.ABC"]
 
