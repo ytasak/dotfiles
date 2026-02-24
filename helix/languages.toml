@@ -91,6 +91,15 @@ auto-format = true
 formatter = { command = "prettier", args = ["--parser", "css"] }
 
 # ============================================================================
+# Markdown
+# ============================================================================
+[[language]]
+name = "markdown"
+language-servers = ["marksman"]
+auto-format = true
+formatter = { command = "prettier", args = ["--parser", "markdown"] }
+
+# ============================================================================
 # Language Server 設定
 # ============================================================================
 [language-server.vtsls]
@@ -122,3 +131,7 @@ args = ["--stdio"]
 [language-server.vscode-css-language-server]
 command = "vscode-css-language-server"
 args = ["--stdio"]
+
+[language-server.marksman]
+command = "marksman"
+args = ["server"]
