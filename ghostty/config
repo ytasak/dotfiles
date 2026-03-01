@@ -11,6 +11,11 @@ macos-option-as-alt = true
 
 cursor-style = block
 cursor-style-blink = false
-shell-integration-features = no-cursor
+
+# cmux でプロンプト増殖バグが発生するため shell-integration を無効化。
+# Ghostty の prompt mark (OSC 133) による再描画が cmux と競合する。
+# shell-integration-features では prompt mark だけの個別無効化は不可。
+# 解消確認後、detect に戻して shell-integration-features で絞る案も検討。
+shell-integration = none
 
 keybind = shift+enter=text:\n
