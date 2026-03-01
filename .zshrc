@@ -38,8 +38,11 @@ autoload -Uz compinit && compinit
 # 補完で大文字小文字を区別しない
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
+# sindresorhus/pure は print -P + カーソル移動で preprompt を描画するため、
+# cmux (Ghostty ベースマルチプレクサ) でプロンプト行が増殖するバグがある。
+# purer は pure のシングルライン fork で、PROMPT 変数に直接代入するため安全。
 zinit ice pick"async.zsh" src"pure.zsh"
-zinit light sindresorhus/pure
+zinit light DFurnes/purer
 
 # ============================================================================
 # PATH
