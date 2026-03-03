@@ -1,5 +1,6 @@
 tap "laishulu/homebrew"
 
+brew "arduino-cli"
 brew "helix"
 brew "jdtls"
 brew "google-java-format"

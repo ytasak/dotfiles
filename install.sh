@@ -138,6 +138,11 @@ create_symlink "claude/settings.json" "$CLAUDE_DIR/settings.json"
 # SSH設定
 create_symlink "ssh/config" "$SSH_DIR/config"
 
+# ローカルスクリプト (bin/)
+for script in "$DOTFILES_DIR"/bin/*; do
+    [[ -f "$script" ]] && create_symlink "bin/$(basename "$script")" "$LOCAL_BIN_DIR/$(basename "$script")"
+done
+
 
 # ----------------------------------------------------------------------------
 # miseによるツールインストール
@@ -173,6 +178,31 @@ else
         info "Yazi Dracula flavor のインストール完了"
     else
         warn "Yazi Dracula flavor のインストールに失敗"
+    fi
+fi
+
+# ----------------------------------------------------------------------------
+# Arduino CLI (ESP32) のセットアップ
+# ----------------------------------------------------------------------------
+echo ""
+echo "🔌 Arduino CLI (ESP32) をセットアップします..."
+
+if ! command_exists arduino-cli; then
+    warn "arduino-cli がインストールされていません（brew bundle で入ります）"
+else
+    arduino-cli core update-index
+    arduino-cli config add board_manager.additional_urls \
+        https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+    arduino-cli core update-index
+
+    if arduino-cli core list | grep -q "esp32:esp32"; then
+        info "ESP32 ボードコアは既にインストールされています"
+    else
+        if arduino-cli core install esp32:esp32; then
+            info "ESP32 ボードコアのインストール完了"
+        else
+            warn "ESP32 ボードコアのインストールに失敗"
+        fi
     fi
 fi
 

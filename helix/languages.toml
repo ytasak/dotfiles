@@ -100,6 +100,22 @@ auto-format = true
 formatter = { command = "prettier", args = ["--parser", "markdown"] }
 
 # ============================================================================
+# C / C++ (Arduino / ESP32)
+# ============================================================================
+[[language]]
+name = "c"
+language-servers = ["clangd"]
+auto-format = true
+formatter = { command = "clang-format" }
+
+[[language]]
+name = "cpp"
+language-servers = ["clangd"]
+auto-format = true
+formatter = { command = "clang-format" }
+file-types = ["cpp", "cc", "cxx", "c++", "hpp", "hh", "hxx", "h++", "h", "ino"]
+
+# ============================================================================
 # Language Server 設定
 # ============================================================================
 [language-server.vtsls]
@@ -131,6 +147,10 @@ args = ["--stdio"]
 [language-server.vscode-css-language-server]
 command = "vscode-css-language-server"
 args = ["--stdio"]
+
+[language-server.clangd]
+command = "clangd"
+args = ["--background-index", "--clang-tidy"]
 
 [language-server.marksman]
 command = "marksman"
