@@ -1,0 +1,54 @@
+pre-commit:
+  parallel: true
+  commands:
+    check:
+      glob:
+        - '*.{ts,tsx}'
+        - 'src/**/*.{ts,tsx}'
+        - 'packages/vscode/**'
+        - 'package.json'
+        - 'pnpm-lock.yaml'
+        - 'tsconfig.json'
+        - 'tsconfig.*.json'
+        - '.oxlintrc.json'
+        - '.oxfmtrc.json'
+      run: pnpm run check:fix
+      stage_fixed: true
+      fail_text: 'Static checks failed. Please fix the issues and try again.'
+
+    format:
+      run: pnpm run format:fix
+      stage_fixed: true
+      fail_text: 'Oxfmt formatting failed. Please check the issues and try again.'
+
+    knip:
+      glob:
+        - 'src/**/*.{ts,tsx,js,jsx,json,css}'
+        - 'packages/vscode/**'
+        - 'scripts/*.{js,mjs,cjs}'
+        - 'scripts/**/*.{js,mjs,cjs}'
+        - 'package.json'
+        - 'pnpm-lock.yaml'
+        - 'tsconfig.json'
+        - 'tsconfig.*.json'
+        - 'vite.config.ts'
+        - 'vitest.config.ts'
+        - 'postcss.config.js'
+        - 'knip.json'
+      run: pnpm run knip
+      fail_text: 'Knip detected unused files/exports/dependencies. Please fix the issues and try again.'
+
+    test:
+      glob:
+        - 'src/**/*.{ts,tsx}'
+        - 'packages/vscode/**'
+        - 'package.json'
+        - 'vitest.config.ts'
+      run: pnpm test
+      fail_text: 'Tests failed. Please fix failing tests and try again.'
+
+pre-push:
+  commands:
+    build:
+      run: pnpm run build
+      fail_text: 'Build failed. Please fix build errors before pushing.'

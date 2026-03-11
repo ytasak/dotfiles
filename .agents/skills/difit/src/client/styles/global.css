@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+@theme {
+  --color-github-bg-primary: #0d1117;
+  --color-github-bg-secondary: #161b22;
+  --color-github-bg-tertiary: #21262d;
+  --color-github-border: #30363d;
+  --color-github-text-primary: #f0f6fc;
+  --color-github-text-secondary: #8b949e;
+  --color-github-text-muted: #6e7681;
+  --color-github-accent: #238636;
+  --color-github-danger: #da3633;
+  --color-github-warning: #d29922;
+
+  --color-diff-addition-bg: #0d4429;
+  --color-diff-addition-border: #1b7c3d;
+  --color-diff-deletion-bg: #67060c;
+  --color-diff-deletion-border: #da3633;
+  --color-diff-neutral-bg: #21262d;
+  --color-diff-selected-bg: #ae7c1426;
+  --color-diff-selected-border: #ae7c1466;
+
+  --color-comment-bg: #1c2128;
+  --color-comment-border: #373e47;
+  --color-comment-text: #e6edf3;
+}
+
+/* CSS Custom Properties for dynamic theming */
+:root {
+  --app-font-size: 14px;
+  --app-font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+}
+
+/* Global styles */
+html,
+body {
+  background-color: var(--color-github-bg-primary);
+  color: var(--color-github-text-primary);
+  font-family: var(--app-font-family);
+  line-height: 1.5;
+  font-size: var(--app-font-size);
+}
+
+/* Enable smooth transition from fixed width to auto (Chrome/Edge 129+ only) */
+:root {
+  interpolate-size: allow-keywords;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Markdown preview code blocks: render each Prism line on its own line */
+.markdown-preview-code .token-line {
+  display: block;
+}
+
+/* Sparkle animation */
+@keyframes sparkle-rise {
+  0% {
+    transform: translateY(20px) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(10px) scale(1);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(-30px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.animate-sparkle-rise {
+  animation: sparkle-rise 0.8s ease-out both;
+}
+
+/* Add smooth transitions for theme changes only to elements that change colors */
+html,
+body,
+.bg-github-bg-primary,
+.bg-github-bg-secondary,
+.bg-github-bg-tertiary,
+[class*="bg-github"],
+[class*="text-github"],
+[class*="border-github"],
+[class*="bg-diff"],
+[class*="border-diff"] {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Keyboard navigation cursor styles for unified mode (tr level) */
+tr.keyboard-cursor td {
+  position: relative;
+}
+
+/* Keyboard navigation highlight overlay for unified mode table cells */
+tr.keyboard-cursor td::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 253, 84, 0.2);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Add border to the first cell only (unified mode) */
+tr.keyboard-cursor td:first-child::before {
+  box-shadow:
+    inset 1px 0 0 0 rgba(255, 253, 84, 0.4),
+    inset 0 1px 0 0 rgba(255, 253, 84, 0.4),
+    inset 0 -1px 0 0 rgba(255, 253, 84, 0.4);
+}
+
+/* Add border to the last cell only (unified mode) */
+tr.keyboard-cursor td:last-child::before {
+  box-shadow:
+    inset -1px 0 0 0 rgba(255, 253, 84, 0.4),
+    inset 0 1px 0 0 rgba(255, 253, 84, 0.4),
+    inset 0 -1px 0 0 rgba(255, 253, 84, 0.4);
+}
+
+/* Add border to middle cells (unified mode) */
+tr.keyboard-cursor td:not(:first-child):not(:last-child)::before {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 253, 84, 0.4),
+    inset 0 -1px 0 0 rgba(255, 253, 84, 0.4);
+}
+
+/* Keyboard navigation cursor styles for split mode (td level) */
+td.keyboard-cursor {
+  position: relative;
+}
+
+/* Keyboard navigation highlight overlay for split mode cells */
+td.keyboard-cursor::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 253, 84, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 253, 84, 0.4);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Word highlighting styles */
+.word-token {
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.15s ease;
+}
+
+.word-highlight {
+  background-color: var(--word-highlight-color, #fffd54);
+  border-radius: 2px;
+}
+
+/* Browser native UI color scheme (scrollbars, form elements, etc.) */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Dark theme word highlight */
+[data-theme="dark"] {
+  --word-highlight-color: rgba(255, 253, 84, 0.3);
+}
+
+/* Light theme word highlight */
+[data-theme="light"] {
+  --word-highlight-color: #fffd54;
+}
+
+/* Word-level diff highlighting */
+.word-diff-added {
+  background-color: var(--word-diff-added-bg);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.word-diff-removed {
+  background-color: var(--word-diff-removed-bg);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* Dark theme word-level diff colors (GitHub-like) */
+:root,
+[data-theme="dark"] {
+  --word-diff-added-bg: rgba(63, 185, 80, 0.4);
+  --word-diff-removed-bg: rgba(248, 81, 73, 0.4);
+}
+
+/* Light theme word-level diff colors */
+[data-theme="light"] {
+  --word-diff-added-bg: rgba(63, 185, 80, 0.5);
+  --word-diff-removed-bg: rgba(248, 81, 73, 0.5);
+}

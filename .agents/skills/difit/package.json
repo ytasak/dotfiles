@@ -1,0 +1,110 @@
+{
+  "name": "difit",
+  "version": "3.1.15",
+  "description": "A lightweight command-line tool that spins up a local web server to display Git commit diffs in a GitHub-like Files changed view",
+  "keywords": [
+    "cli",
+    "code-review",
+    "diff",
+    "diff-viewer",
+    "git",
+    "github",
+    "react",
+    "review",
+    "tailwind"
+  ],
+  "homepage": "https://github.com/yoshiko-pg/difit",
+  "bugs": {
+    "url": "https://github.com/yoshiko-pg/difit/issues"
+  },
+  "license": "MIT",
+  "author": "yoshiko-pg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoshiko-pg/difit.git"
+  },
+  "bin": {
+    "difit": "./dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "main": "./dist/cli/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "dev:cli": "tsc --project tsconfig.cli.json && NODE_ENV=development node dist/cli/index.js",
+    "build": "tsc -b && vite build",
+    "build:cli": "tsc --project tsconfig.cli.json",
+    "package:vscode": "pnpm -C packages/vscode run package",
+    "start": "pnpm run build && node dist/cli/index.js",
+    "check": "oxlint . --type-aware --type-check --deny-warnings --report-unused-disable-directives",
+    "check:fix": "oxlint . --type-aware --type-check --deny-warnings --report-unused-disable-directives --fix",
+    "format": "oxfmt --check .",
+    "format:fix": "oxfmt --write .",
+    "knip": "knip --use-tsconfig-files",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepare": "lefthook install",
+    "prepublishOnly": "NODE_ENV=production pnpm run build",
+    "perf": "node scripts/measure-performance.js",
+    "perf:small": "node scripts/measure-performance.js --size small",
+    "perf:medium": "node scripts/measure-performance.js --size medium",
+    "perf:large": "node scripts/measure-performance.js --size large",
+    "perf:xlarge": "node scripts/measure-performance.js --size xlarge",
+    "perf:compare": "node scripts/compare-performance.js"
+  },
+  "dependencies": {
+    "@floating-ui/react": "^0.27.16",
+    "@parcel/watcher": "^2.5.1",
+    "commander": "^14.0.0",
+    "diff": "^8.0.2",
+    "express": "^5.1.0",
+    "ink": "^6.0.1",
+    "lucide-react": "^0.575.0",
+    "open": "^11.0.0",
+    "prism-react-renderer": "^2.4.1",
+    "prismjs": "^1.30.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hotkeys-hook": "^5.2.4",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "simple-git": "^3.28.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@tsconfig/strictest": "^2.0.5",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.8",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.4.21",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "happy-dom": "^20.0.0",
+    "knip": "^5.83.0",
+    "lefthook": "^2.0.0",
+    "oxfmt": "^0.35.0",
+    "oxlint": "^1.49.0",
+    "oxlint-tsgolint": "^0.15.0",
+    "playwright": "^1.54.1",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.3",
+    "undici": "^7.11.0",
+    "vite": "^7.0.0",
+    "vitest": "^4.0.6"
+  },
+  "engines": {
+    "node": ">=21.0.0"
+  },
+  "packageManager": "pnpm@10.30.2"
+}

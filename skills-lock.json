@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "difit": {
+      "source": "yoshiko-pg/difit",
+      "sourceType": "github",
+      "computedHash": "0646ca8d53f40df3a508c299cc5774189b0509fd5b83dd58ed3e6ef3a7dbac28"
+    }
+  }
+}

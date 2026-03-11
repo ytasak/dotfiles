@@ -1,0 +1,742 @@
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+
+import {
+  type DiffChunk as DiffChunkType,
+  type DiffLine,
+  type DiffSide,
+  type Comment,
+  type LineNumber,
+  type LineSelection,
+} from '../../types/diff';
+import { type CursorPosition } from '../hooks/keyboardNavigation';
+import {
+  computeWordLevelDiff,
+  shouldComputeWordDiff,
+  type WordLevelDiffResult,
+} from '../utils/wordLevelDiff';
+
+import { CommentButton } from './CommentButton';
+import { CommentForm } from './CommentForm';
+import { EnhancedPrismSyntaxHighlighter } from './EnhancedPrismSyntaxHighlighter';
+import { InlineComment } from './InlineComment';
+import { OpenInEditorButton } from './OpenInEditorButton';
+import type { AppearanceSettings } from './SettingsModal';
+import { WordLevelDiffHighlighter } from './WordLevelDiffHighlighter';
+
+interface SideBySideDiffChunkProps {
+  chunk: DiffChunkType;
+  chunkIndex: number;
+  comments: Comment[];
+  onAddComment: (
+    line: LineNumber,
+    body: string,
+    codeContent?: string,
+    side?: DiffSide,
+  ) => Promise<void>;
+  onGeneratePrompt: (comment: Comment) => string;
+  onRemoveComment: (commentId: string) => void;
+  onUpdateComment: (commentId: string, newBody: string) => void;
+  syntaxTheme?: AppearanceSettings['syntaxTheme'];
+  cursor?: CursorPosition | null;
+  fileIndex?: number;
+  onLineClick?: (
+    fileIndex: number,
+    chunkIndex: number,
+    lineIndex: number,
+    side: 'left' | 'right',
+  ) => void;
+  commentTrigger?: { fileIndex: number; chunkIndex: number; lineIndex: number } | null;
+  onCommentTriggerHandled?: () => void;
+  filename?: string;
+  onOpenInEditor?: (filePath: string, lineNumber: number) => void;
+}
+
+interface SideBySideLine {
+  oldLine?: DiffLine;
+  newLine?: DiffLine;
+  oldLineNumber?: number;
+  newLineNumber?: number;
+  oldLineOriginalIndex?: number;
+  newLineOriginalIndex?: number;
+  wordLevelDiff?: WordLevelDiffResult;
+}
+
+// Type guard to check if a line is an expanded line (#6)
+const isExpandedLine = (line: DiffLine | undefined): boolean => {
+  return line !== undefined && 'isExpanded' in line && line.isExpanded === true;
+};
+
+// Utility function to get split line class (#10)
+const getSideBySideLineClass = (line: DiffLine | undefined, isExpanded: boolean): string => {
+  if (isExpanded) {
+    return 'bg-github-bg-tertiary/80';
+  }
+  if (line?.type === 'delete') {
+    return 'bg-diff-deletion-bg';
+  }
+  if (line?.type === 'add') {
+    return 'bg-diff-addition-bg';
+  }
+  if (line?.type === 'normal') {
+    return 'bg-transparent';
+  }
+  return 'bg-github-bg-secondary';
+};
+
+export function SideBySideDiffChunk({
+  chunk,
+  chunkIndex,
+  comments,
+  onAddComment,
+  onGeneratePrompt,
+  onRemoveComment,
+  onUpdateComment,
+  syntaxTheme,
+  cursor = null,
+  fileIndex = 0,
+  onLineClick,
+  commentTrigger,
+  onCommentTriggerHandled,
+  filename,
+  onOpenInEditor,
+}: SideBySideDiffChunkProps) {
+  const [startLine, setStartLine] = useState<LineSelection | null>(null);
+  const [endLine, setEndLine] = useState<LineSelection | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [commentingLine, setCommentingLine] = useState<{
+    side: DiffSide;
+    lineNumber: LineNumber;
+  } | null>(null);
+  const [hoveredLine, setHoveredLine] = useState<LineSelection | null>(null);
+
+  // Handle comment trigger from keyboard navigation
+  useEffect(() => {
+    if (commentTrigger?.lineIndex !== undefined) {
+      const line = chunk.lines[commentTrigger.lineIndex];
+      if (line && line.type !== 'delete') {
+        const lineNumber = line.newLineNumber;
+        if (lineNumber) {
+          // oxlint-disable-next-line react-hooks-js/set-state-in-effect -- intentional: respond to external keyboard trigger
+          setCommentingLine({ side: 'new', lineNumber });
+          onCommentTriggerHandled?.();
+        }
+      }
+    }
+  }, [commentTrigger, chunk.lines, onCommentTriggerHandled]);
+
+  // Global mouse up handler for drag selection
+  useEffect(() => {
+    if (isDragging) {
+      const handleGlobalMouseUp = () => {
+        setIsDragging(false);
+        setStartLine(null);
+        setEndLine(null);
+      };
+
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+      return () => {
+        document.removeEventListener('mouseup', handleGlobalMouseUp);
+      };
+    }
+    return undefined;
+  }, [isDragging]);
+
+  const handleAddComment = useCallback(
+    (side: DiffSide, lineNumber: LineNumber) => {
+      if (commentingLine?.side === side && commentingLine?.lineNumber === lineNumber) {
+        setCommentingLine(null);
+      } else {
+        setCommentingLine({ side, lineNumber });
+      }
+    },
+    [commentingLine],
+  );
+
+  const handleCancelComment = useCallback(() => {
+    setCommentingLine(null);
+  }, []);
+
+  // Get the code content for the selected lines (for suggestion feature)
+  const getSelectedCodeContent = useCallback((): string => {
+    if (!commentingLine) return '';
+
+    const { side, lineNumber } = commentingLine;
+    const lines = chunk.lines;
+
+    if (typeof lineNumber === 'number') {
+      // Single line
+      const line = lines.find((l) =>
+        side === 'old' ? l.oldLineNumber === lineNumber : l.newLineNumber === lineNumber,
+      );
+      return line?.content?.replace(/^[+-]/, '') || '';
+    } else {
+      // Range of lines
+      const [start, end] = lineNumber;
+      const selectedLines = lines.filter((l) => {
+        const ln = side === 'old' ? l.oldLineNumber : l.newLineNumber;
+        return ln !== undefined && ln >= start && ln <= end;
+      });
+      return selectedLines.map((l) => l.content?.replace(/^[+-]/, '') || '').join('\n');
+    }
+  }, [commentingLine, chunk.lines]);
+
+  const handleSubmitComment = useCallback(
+    async (body: string) => {
+      if (commentingLine !== null) {
+        const codeContent = getSelectedCodeContent();
+        await onAddComment(
+          commentingLine.lineNumber,
+          body,
+          codeContent || undefined,
+          commentingLine.side,
+        );
+        setCommentingLine(null);
+      }
+    },
+    [commentingLine, onAddComment, getSelectedCodeContent],
+  );
+
+  const getCommentsForLine = (lineNumber: number, side: DiffSide) => {
+    return comments.filter((c) => {
+      // Check if line number matches (single line or end of range)
+      const lineMatches = Array.isArray(c.line) ? c.line[1] === lineNumber : c.line === lineNumber;
+
+      // Filter by side - if comment has no side (legacy), show on new side only
+      const sideMatches = !c.side || c.side === side;
+
+      return lineMatches && sideMatches;
+    });
+  };
+
+  const getCommentLayout = (sideLine: SideBySideLine): 'left' | 'right' | 'full' => {
+    // サイドバイサイドでは、削除行側（左）にコメントがある場合は左半分、
+    // 追加行側（右）にコメントがある場合は右半分、
+    // 変更なし行の場合は全幅で表示
+    if (sideLine.oldLine?.type === 'delete' && sideLine.newLine?.type === 'add') {
+      // 変更行の場合、newLineNumberを使って判定
+      return sideLine.newLineNumber ? 'right' : 'left';
+    }
+    if (sideLine.oldLine?.type === 'delete') {
+      return 'left';
+    }
+    if (sideLine.newLine?.type === 'add') {
+      return 'right';
+    }
+    return 'full';
+  };
+
+  const getSelectedLineStyle = (side: DiffSide, sideLine: SideBySideLine): string => {
+    const lineNumber = side === 'old' ? sideLine.oldLineNumber : sideLine.newLineNumber;
+    if (!lineNumber) {
+      return '';
+    }
+
+    // Show selection during drag
+    if (isDragging && startLine && endLine && startLine.side === side && endLine.side === side) {
+      const min = Math.min(startLine.lineNumber, endLine.lineNumber);
+      const max = Math.max(startLine.lineNumber, endLine.lineNumber);
+      if (lineNumber >= min && lineNumber <= max) {
+        let classes =
+          'after:bg-blue-100 after:absolute after:inset-0 after:opacity-30 after:border-l-4 after:border-blue-500 after:pointer-events-none';
+        // Add top border for first line
+        if (lineNumber === min) {
+          classes += ' after:border-t-2';
+        }
+        // Add bottom border for last line
+        if (lineNumber === max) {
+          classes += ' after:border-b-2';
+        }
+        return classes;
+      }
+    }
+
+    // Show selection for existing comment
+    if (commentingLine && commentingLine.side === side) {
+      const lineNumberRange = Array.isArray(commentingLine.lineNumber)
+        ? commentingLine.lineNumber
+        : [commentingLine.lineNumber, commentingLine.lineNumber];
+      const start = lineNumberRange[0];
+      const end = lineNumberRange[1];
+
+      if (start !== undefined && end !== undefined && lineNumber >= start && lineNumber <= end) {
+        return 'after:bg-diff-selected-bg after:absolute after:inset-0 after:border-l-5 after:border-l-diff-selected-border after:pointer-events-none';
+      }
+    }
+
+    return '';
+  };
+
+  // Convert unified diff to split format
+  const convertToSideBySide = useCallback(
+    (lines: DiffLine[]): SideBySideLine[] => {
+      const result: SideBySideLine[] = [];
+      let oldLineNum = chunk.oldStart;
+      let newLineNum = chunk.newStart;
+
+      let i = 0;
+      while (i < lines.length) {
+        const line = lines[i];
+        if (!line) {
+          i++;
+          continue;
+        }
+
+        if (line.type === 'normal') {
+          result.push({
+            oldLine: line,
+            newLine: { ...line },
+            oldLineNumber: line.oldLineNumber ?? oldLineNum,
+            newLineNumber: line.newLineNumber ?? newLineNum,
+            oldLineOriginalIndex: i,
+            newLineOriginalIndex: i,
+          });
+          oldLineNum++;
+          newLineNum++;
+          i++;
+        } else if (line.type === 'delete') {
+          // Look ahead for corresponding add
+          let j = i + 1;
+          while (j < lines.length && lines[j]?.type === 'delete') {
+            j++;
+          }
+
+          const deleteLines = lines.slice(i, j);
+          const deleteStartIndex = i;
+          const addLines: DiffLine[] = [];
+          const addStartIndex = j;
+
+          // Collect corresponding add lines
+          while (j < lines.length && lines[j]?.type === 'add') {
+            const addLine = lines[j];
+            if (addLine) {
+              addLines.push(addLine);
+            }
+            j++;
+          }
+
+          // Pair delete and add lines
+          const maxLines = Math.max(deleteLines.length, addLines.length);
+          for (let k = 0; k < maxLines; k++) {
+            const deleteLine = deleteLines[k];
+            const addLine = addLines[k];
+
+            // Compute word-level diff if both lines exist
+            let wordLevelDiff: WordLevelDiffResult | undefined;
+            if (deleteLine && addLine) {
+              if (shouldComputeWordDiff(deleteLine.content, addLine.content)) {
+                wordLevelDiff = computeWordLevelDiff(deleteLine.content, addLine.content);
+              }
+            }
+
+            result.push({
+              oldLine: deleteLine,
+              newLine: addLine,
+              oldLineNumber: deleteLine ? (deleteLine.oldLineNumber ?? oldLineNum + k) : undefined,
+              newLineNumber: addLine ? (addLine.newLineNumber ?? newLineNum + k) : undefined,
+              oldLineOriginalIndex: deleteLine ? deleteStartIndex + k : undefined,
+              newLineOriginalIndex: addLine ? addStartIndex + k : undefined,
+              wordLevelDiff,
+            });
+          }
+
+          oldLineNum += deleteLines.length;
+          newLineNum += addLines.length;
+          i = j;
+        } else if (line.type === 'add') {
+          result.push({
+            newLine: line,
+            newLineNumber: line.newLineNumber ?? newLineNum,
+            newLineOriginalIndex: i,
+          });
+          newLineNum++;
+          i++;
+        }
+      }
+
+      return result;
+    },
+    [chunk.oldStart, chunk.newStart],
+  );
+
+  const sideBySideLines = useMemo(
+    () => convertToSideBySide(chunk.lines),
+    [chunk.lines, convertToSideBySide],
+  );
+
+  return (
+    <div className="bg-github-bg-primary overflow-hidden">
+      <table className="w-full table-fixed border-collapse font-mono text-sm leading-5">
+        <tbody>
+          {sideBySideLines.map((sideLine, index) => {
+            // Fetch comments separately for each side to prevent duplication
+            const oldComments = sideLine.oldLineNumber
+              ? getCommentsForLine(sideLine.oldLineNumber, 'old')
+              : [];
+            const newComments = sideLine.newLineNumber
+              ? getCommentsForLine(sideLine.newLineNumber, 'new')
+              : [];
+            const allComments = [...oldComments, ...newComments];
+
+            // Use the stored original indices
+            const oldLineOriginalIndex = sideLine.oldLineOriginalIndex ?? -1;
+            const newLineOriginalIndex = sideLine.newLineOriginalIndex ?? -1;
+
+            // Check if the current side's line matches the cursor position
+            const isHighlighted = (() => {
+              if (!cursor) return false;
+
+              // Only highlight the line on the current side
+              if (cursor.side === 'left' && oldLineOriginalIndex >= 0) {
+                return (
+                  cursor.chunkIndex === chunkIndex && cursor.lineIndex === oldLineOriginalIndex
+                );
+              } else if (cursor.side === 'right' && newLineOriginalIndex >= 0) {
+                return (
+                  cursor.chunkIndex === chunkIndex && cursor.lineIndex === newLineOriginalIndex
+                );
+              }
+
+              return false;
+            })();
+
+            // Generate IDs for navigation with side suffix
+            const oldLineNavId =
+              oldLineOriginalIndex >= 0
+                ? `file-${fileIndex}-chunk-${chunkIndex}-line-${oldLineOriginalIndex}-left`
+                : undefined;
+            const newLineNavId =
+              newLineOriginalIndex >= 0
+                ? `file-${fileIndex}-chunk-${chunkIndex}-line-${newLineOriginalIndex}-right`
+                : undefined;
+
+            // Determine which cell to highlight
+            const highlightOldCell = isHighlighted && cursor?.side === 'left';
+            const highlightNewCell = isHighlighted && cursor?.side === 'right';
+
+            const cellHighlightClass = 'keyboard-cursor';
+
+            return (
+              <React.Fragment key={index}>
+                <tr
+                  className="group cursor-pointer"
+                  onClick={(e) => {
+                    if (!isDragging) {
+                      const target = e.target;
+                      if (!(target instanceof HTMLElement)) return;
+                      const isInOldSide =
+                        target.closest('td:nth-child(1)') || target.closest('td:nth-child(2)');
+                      const isInNewSide =
+                        target.closest('td:nth-child(3)') || target.closest('td:nth-child(4)');
+
+                      if (isInOldSide && oldLineOriginalIndex >= 0) {
+                        onLineClick?.(fileIndex, chunkIndex, oldLineOriginalIndex, 'left');
+                      } else if (isInNewSide && newLineOriginalIndex >= 0) {
+                        onLineClick?.(fileIndex, chunkIndex, newLineOriginalIndex, 'right');
+                      }
+                    }
+                  }}
+                  onMouseEnter={(e) => {
+                    const target = e.target;
+                    if (!(target instanceof HTMLElement)) return;
+                    const isInOldSide =
+                      target.closest('td:nth-child(1)') || target.closest('td:nth-child(2)');
+                    const isInNewSide =
+                      target.closest('td:nth-child(3)') || target.closest('td:nth-child(4)');
+
+                    if (isInOldSide && sideLine.oldLineNumber) {
+                      setHoveredLine({ side: 'old', lineNumber: sideLine.oldLineNumber });
+                    } else if (isInNewSide && sideLine.newLineNumber) {
+                      setHoveredLine({ side: 'new', lineNumber: sideLine.newLineNumber });
+                    }
+                  }}
+                  onMouseMove={(e) => {
+                    const target = e.target;
+                    if (!(target instanceof HTMLElement)) return;
+                    const isInOldSide =
+                      target.closest('td:nth-child(1)') || target.closest('td:nth-child(2)');
+                    const isInNewSide =
+                      target.closest('td:nth-child(3)') || target.closest('td:nth-child(4)');
+
+                    // Update hover state based on mouse position
+                    if (isInOldSide && sideLine.oldLineNumber) {
+                      if (
+                        hoveredLine?.side !== 'old' ||
+                        hoveredLine?.lineNumber !== sideLine.oldLineNumber
+                      ) {
+                        setHoveredLine({ side: 'old', lineNumber: sideLine.oldLineNumber });
+                      }
+                    } else if (isInNewSide && sideLine.newLineNumber) {
+                      if (
+                        hoveredLine?.side !== 'new' ||
+                        hoveredLine?.lineNumber !== sideLine.newLineNumber
+                      ) {
+                        setHoveredLine({ side: 'new', lineNumber: sideLine.newLineNumber });
+                      }
+                    }
+
+                    // Handle dragging
+                    if (isDragging && startLine) {
+                      if (startLine.side === 'old' && sideLine.oldLineNumber) {
+                        setEndLine({ side: 'old', lineNumber: sideLine.oldLineNumber });
+                      } else if (startLine.side === 'new' && sideLine.newLineNumber) {
+                        setEndLine({ side: 'new', lineNumber: sideLine.newLineNumber });
+                      }
+                    }
+                  }}
+                  onMouseLeave={() => setHoveredLine(null)}
+                >
+                  {/* Old side */}
+                  <td
+                    id={oldLineNavId}
+                    className={`w-[var(--line-number-width)] min-w-[var(--line-number-width)] max-w-[var(--line-number-width)] px-2 text-right text-github-text-muted bg-github-bg-secondary border-r border-github-border select-none align-top relative overflow-visible ${highlightOldCell ? cellHighlightClass : ''}`}
+                  >
+                    <span>{sideLine.oldLineNumber || ''}</span>
+                    {hoveredLine?.side === 'old' &&
+                      hoveredLine?.lineNumber === sideLine.oldLineNumber && (
+                        <>
+                          {onOpenInEditor &&
+                            filename &&
+                            sideLine.oldLine?.type !== 'delete' &&
+                            sideLine.newLineNumber !== undefined && (
+                              <OpenInEditorButton
+                                onClick={() => {
+                                  const lineNumber = sideLine.newLineNumber;
+                                  if (!filename || lineNumber === undefined) return;
+                                  onOpenInEditor(filename, lineNumber);
+                                }}
+                              />
+                            )}
+                          <CommentButton
+                            onMouseDown={(e) => {
+                              e.stopPropagation();
+                              if (sideLine.oldLineNumber) {
+                                setStartLine({ side: 'old', lineNumber: sideLine.oldLineNumber });
+                                setEndLine({ side: 'old', lineNumber: sideLine.oldLineNumber });
+                                setIsDragging(true);
+                              }
+                            }}
+                            onMouseUp={(e) => {
+                              e.stopPropagation();
+                              if (!sideLine.oldLineNumber || !startLine) {
+                                setIsDragging(false);
+                                setStartLine(null);
+                                setEndLine(null);
+                                return;
+                              }
+
+                              const actualEndLine =
+                                endLine && endLine.side === 'old'
+                                  ? endLine.lineNumber
+                                  : sideLine.oldLineNumber;
+                              if (
+                                startLine.side !== 'old' ||
+                                startLine.lineNumber === actualEndLine
+                              ) {
+                                handleAddComment('old', sideLine.oldLineNumber);
+                              } else {
+                                const min = Math.min(startLine.lineNumber, actualEndLine);
+                                const max = Math.max(startLine.lineNumber, actualEndLine);
+                                handleAddComment('old', [min, max]);
+                              }
+
+                              setIsDragging(false);
+                              setStartLine(null);
+                              setEndLine(null);
+                            }}
+                          />
+                        </>
+                      )}
+                  </td>
+                  <td
+                    className={`w-1/2 p-0 align-top border-r border-github-border relative ${getSideBySideLineClass(sideLine.oldLine, isExpandedLine(sideLine.oldLine))} ${getSelectedLineStyle('old', sideLine)} ${highlightOldCell ? cellHighlightClass : ''}`}
+                  >
+                    {sideLine.oldLine && (
+                      <div className="flex items-center relative min-h-[20px] px-3">
+                        {sideLine.wordLevelDiff ? (
+                          <WordLevelDiffHighlighter
+                            segments={sideLine.wordLevelDiff.oldSegments}
+                            className="flex-1 text-github-text-primary whitespace-pre-wrap break-all overflow-wrap-break-word select-text"
+                          />
+                        ) : (
+                          <EnhancedPrismSyntaxHighlighter
+                            code={sideLine.oldLine.content}
+                            className="flex-1 text-github-text-primary whitespace-pre-wrap break-all overflow-wrap-break-word select-text [&_pre]:m-0 [&_pre]:p-0 [&_pre]:!bg-transparent [&_pre]:font-inherit [&_pre]:text-inherit [&_pre]:leading-inherit [&_code]:!bg-transparent [&_code]:font-inherit [&_code]:text-inherit [&_code]:leading-inherit"
+                            syntaxTheme={syntaxTheme}
+                            filename={filename}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </td>
+
+                  {/* New side */}
+                  <td
+                    id={newLineNavId}
+                    className={`w-[var(--line-number-width)] min-w-[var(--line-number-width)] max-w-[var(--line-number-width)] px-2 text-right text-github-text-muted bg-github-bg-secondary border-r border-github-border select-none align-top relative overflow-visible ${highlightNewCell ? cellHighlightClass : ''}`}
+                  >
+                    <span>{sideLine.newLineNumber || ''}</span>
+                    {hoveredLine?.side === 'new' &&
+                      hoveredLine?.lineNumber === sideLine.newLineNumber && (
+                        <>
+                          {onOpenInEditor && filename && sideLine.newLineNumber !== undefined && (
+                            <OpenInEditorButton
+                              onClick={() => {
+                                const lineNumber = sideLine.newLineNumber;
+                                if (!filename || lineNumber === undefined) return;
+                                onOpenInEditor(filename, lineNumber);
+                              }}
+                            />
+                          )}
+                          <CommentButton
+                            onMouseDown={(e) => {
+                              e.stopPropagation();
+                              if (sideLine.newLineNumber) {
+                                setStartLine({ side: 'new', lineNumber: sideLine.newLineNumber });
+                                setEndLine({ side: 'new', lineNumber: sideLine.newLineNumber });
+                                setIsDragging(true);
+                              }
+                            }}
+                            onMouseUp={(e) => {
+                              e.stopPropagation();
+                              if (!sideLine.newLineNumber || !startLine) {
+                                setIsDragging(false);
+                                setStartLine(null);
+                                setEndLine(null);
+                                return;
+                              }
+
+                              const actualEndLine =
+                                endLine && endLine.side === 'new'
+                                  ? endLine.lineNumber
+                                  : sideLine.newLineNumber;
+                              if (
+                                startLine.side !== 'new' ||
+                                startLine.lineNumber === actualEndLine
+                              ) {
+                                handleAddComment('new', sideLine.newLineNumber);
+                              } else {
+                                const min = Math.min(startLine.lineNumber, actualEndLine);
+                                const max = Math.max(startLine.lineNumber, actualEndLine);
+                                handleAddComment('new', [min, max]);
+                              }
+
+                              setIsDragging(false);
+                              setStartLine(null);
+                              setEndLine(null);
+                            }}
+                          />
+                        </>
+                      )}
+                  </td>
+                  <td
+                    className={`w-1/2 p-0 align-top relative ${getSideBySideLineClass(sideLine.newLine, isExpandedLine(sideLine.newLine))} ${getSelectedLineStyle('new', sideLine)} ${highlightNewCell ? cellHighlightClass : ''}`}
+                  >
+                    {sideLine.newLine && (
+                      <div className="flex items-center relative min-h-[20px] px-3">
+                        {sideLine.wordLevelDiff ? (
+                          <WordLevelDiffHighlighter
+                            segments={sideLine.wordLevelDiff.newSegments}
+                            className="flex-1 text-github-text-primary whitespace-pre-wrap break-all overflow-wrap-break-word select-text"
+                          />
+                        ) : (
+                          <EnhancedPrismSyntaxHighlighter
+                            code={sideLine.newLine.content}
+                            className="flex-1 text-github-text-primary whitespace-pre-wrap break-all overflow-wrap-break-word select-text [&_pre]:m-0 [&_pre]:p-0 [&_pre]:!bg-transparent [&_pre]:font-inherit [&_pre]:text-inherit [&_pre]:leading-inherit [&_code]:!bg-transparent [&_code]:font-inherit [&_code]:text-inherit [&_code]:leading-inherit"
+                            syntaxTheme={syntaxTheme}
+                            filename={filename}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+
+                {/* Comments row */}
+                {allComments.length > 0 && (
+                  <tr className="bg-github-bg-secondary">
+                    <td colSpan={4} className="p-0 border-t border-github-border">
+                      {allComments.map((comment) => {
+                        // Determine layout based on comment's side
+                        const commentSide = comment.side || 'new';
+                        let layout: 'left' | 'right' | 'full';
+
+                        if (commentSide === 'old' && sideLine.oldLineNumber) {
+                          layout = 'left';
+                        } else if (commentSide === 'new' && sideLine.newLineNumber) {
+                          layout = 'right';
+                        } else {
+                          layout = getCommentLayout(sideLine);
+                        }
+
+                        return (
+                          <div
+                            key={comment.id}
+                            className={`flex ${
+                              layout === 'left'
+                                ? 'justify-start'
+                                : layout === 'right'
+                                  ? 'justify-end'
+                                  : 'justify-center'
+                            }`}
+                          >
+                            <div className={`${layout === 'full' ? 'w-full' : 'w-1/2'}`}>
+                              <div className="m-2 mx-3">
+                                <InlineComment
+                                  comment={comment}
+                                  onGeneratePrompt={onGeneratePrompt}
+                                  onRemoveComment={onRemoveComment}
+                                  onUpdateComment={onUpdateComment}
+                                  syntaxTheme={syntaxTheme}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </td>
+                  </tr>
+                )}
+
+                {/* Comment form row */}
+                {commentingLine &&
+                  ((commentingLine.side === 'old' &&
+                    commentingLine.lineNumber === sideLine.oldLineNumber) ||
+                    (commentingLine.side === 'new' &&
+                      commentingLine.lineNumber === sideLine.newLineNumber) ||
+                    (Array.isArray(commentingLine.lineNumber) &&
+                      ((commentingLine.side === 'new' &&
+                        commentingLine.lineNumber[1] === sideLine.newLineNumber) ||
+                        (commentingLine.side === 'old' &&
+                          commentingLine.lineNumber[1] === sideLine.oldLineNumber)))) && (
+                    <tr className="bg-github-bg-secondary">
+                      <td colSpan={4} className="p-0">
+                        <div
+                          className={`flex ${
+                            commentingLine.side === 'old'
+                              ? 'justify-start'
+                              : commentingLine.side === 'new'
+                                ? 'justify-end'
+                                : 'justify-center'
+                          }`}
+                        >
+                          <div className={`w-1/2`}>
+                            <CommentForm
+                              onSubmit={handleSubmitComment}
+                              onCancel={handleCancelComment}
+                              selectedCode={getSelectedCodeContent()}
+                              syntaxTheme={syntaxTheme}
+                              filename={filename}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+              </React.Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}

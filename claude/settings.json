@@ -16,11 +16,6 @@
           {
             "type": "command",
             "command": "afplay /System/Library/Sounds/Funk.aiff"
-          },
-          {
-            "type": "command",
-            "command": "difit-cmux-hook",
-            "async": true
           }
         ]
       }
