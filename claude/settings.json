@@ -16,6 +16,11 @@
           {
             "type": "command",
             "command": "afplay /System/Library/Sounds/Funk.aiff"
+          },
+          {
+            "type": "command",
+            "command": "difit-cmux-hook",
+            "async": true
           }
         ]
       }
@@ -23,6 +28,9 @@
   },
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
-    "lua-lsp@claude-plugins-official": true
+    "lua-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "jdtls-lsp@claude-plugins-official": true,
+    "mikasa@cc-plugins": true
   }
 }

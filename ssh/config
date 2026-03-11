@@ -1,3 +1,5 @@
+Include /Users/usr0200810/.colima/ssh_config
+
 Include ~/.ssh/config.local
 
 Host *

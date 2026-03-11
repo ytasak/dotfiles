@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# =============================================================================
+# difit-cmux-hook
+# Claude Code Stop hook: opens difit in cmux browser split
+# when there are uncommitted git changes.
+# =============================================================================
+
+CMUX="/Applications/cmux.app/Contents/Resources/bin/cmux"
+
+# Ensure PATH includes tools managed by mise
+eval "$("$HOME/.local/bin/mise" env -s bash 2>/dev/null)"
+
+# Use CLAUDE_PROJECT_DIR from hook environment
+targetDir="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+cd "$targetDir" || exit 0
+
+# Skip if not a git repository
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
+
+# Skip if no changes (staged, unstaged, or untracked)
+if git diff --quiet HEAD 2>/dev/null && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+    exit 0
+fi
+
+# Skip if cmux is not running
+"$CMUX" sidebar-state >/dev/null 2>&1 || exit 0
+
+# Kill any existing difit server on port 4966
+lsof -ti:4966 | xargs kill 2>/dev/null
+sleep 0.3
+
+# Detect current branch and default branch
+currentBranch=$(git rev-parse --abbrev-ref HEAD)
+defaultBranch=$(git symbolic-ref refs/remotes/origin/HEAD --short 2>/dev/null)
+if [[ -z "$defaultBranch" ]]; then
+    if git rev-parse --verify origin/main >/dev/null 2>&1; then
+        defaultBranch="origin/main"
+    elif git rev-parse --verify origin/master >/dev/null 2>&1; then
+        defaultBranch="origin/master"
+    fi
+fi
+
+difitArgs=(--mode unified --no-open --clean --include-untracked --port 4966)
+
+if [[ -z "$defaultBranch" ]] || [[ "$currentBranch" == "${defaultBranch#origin/}" ]]; then
+    difit working "${difitArgs[@]}" &
+else
+    mergeBase=$(git merge-base HEAD "$defaultBranch" 2>/dev/null)
+    if [[ -z "$mergeBase" ]]; then
+        difit working "${difitArgs[@]}" &
+    else
+        difit "$mergeBase" . "${difitArgs[@]}" &
+    fi
+fi
+
+DIFIT_PID=$!
+
+# Wait until difit server is ready (max 10s)
+for i in $(seq 1 20); do
+    curl -s http://localhost:4966/ >/dev/null 2>&1 && break
+    sleep 0.5
+done
+
+# Open in cmux browser split
+browserSurface=$("$CMUX" --json browser open-split "http://localhost:4966/" | grep -o '"ref" *: *"surface:[^"]*"' | head -1 | grep -o 'surface:[0-9]*')
+
+if [[ -z "$browserSurface" ]]; then
+    exit 0
+fi
+
+# Wait until browser pane is closed, then shut down server
+while "$CMUX" surface-health 2>&1 | grep -q "$browserSurface"; do
+    sleep 1
+done
+
+lsof -ti:4966 | xargs kill 2>/dev/null
