@@ -9,15 +9,11 @@ layout {
         }
     }
 
-    tab name="editor" focus=true split_direction="vertical" {
-        pane size="60%" focus=true {
-            command "hx"
-            args "."
-        }
-        pane size="40%"
+    tab name="tab1" focus=true {
+        pane
     }
 
-    tab name="terminal" {
+    tab name="tab2" {
         pane
     }
 }
