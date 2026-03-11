@@ -19,7 +19,7 @@ cd "$targetDir" || exit 0
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
 
 # Skip if no changes (staged, unstaged, or untracked)
-if git diff --quiet HEAD 2>/dev/null && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+if [ -z "$(git status --porcelain 2>/dev/null)" ]; then
     exit 0
 fi
 
