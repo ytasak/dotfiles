@@ -134,6 +134,8 @@ create_symlink "yazi"    "$CONFIG_DIR/yazi"
 # Claude Code設定
 create_symlink "claude/CLAUDE.md"     "$CLAUDE_DIR/CLAUDE.md"
 create_symlink "claude/settings.json" "$CLAUDE_DIR/settings.json"
+mkdir -p "$CLAUDE_DIR/skills"
+create_symlink ".agents/skills/difit" "$CLAUDE_DIR/skills/difit"
 
 # SSH設定
 create_symlink "ssh/config" "$SSH_DIR/config"
