@@ -1,5 +1,20 @@
 {
+  "permissions": {
+    "defaultMode": "auto"
+  },
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.java) google-java-format --replace \"$f\" 2>/dev/null ;; esac; } || true",
+            "statusMessage": "Running google-java-format"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "hooks": [
@@ -26,6 +41,10 @@
     "lua-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
     "jdtls-lsp@claude-plugins-official": true,
-    "mikasa@cc-plugins": true
-  }
+    "mikasa@cc-plugins": true,
+    "general@cc-plugins": true
+  },
+  "effortLevel": "xhigh",
+  "editorMode": "vim",
+  "skipAutoPermissionPrompt": true
 }
