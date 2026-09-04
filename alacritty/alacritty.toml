@@ -1,0 +1,143 @@
+# Alacritty 設定 (alacritty 0.17.x)
+
+[general]
+live_config_reload = true
+
+[env]
+TERM = "xterm-256color"
+
+# ---------------------------------------------------------------------------
+# ウィンドウ
+# ---------------------------------------------------------------------------
+[window]
+padding.x = 8
+padding.y = 8
+dynamic_padding = true      # 端数ピクセルを上下左右へ均等配分
+opacity = 1.0
+decorations = "full"
+dynamic_title = true        # シェル/アプリによるタイトル変更を許可
+resize_increments = true    # リサイズを文字セル単位にスナップ
+option_as_alt = "OnlyLeft"  # 左Optionのみ Alt/Meta 扱い（右Optionは記号入力用に温存）
+
+# ---------------------------------------------------------------------------
+# フォント
+#   HackGen Console NF は Regular / Bold のみのため style は指定しない
+# ---------------------------------------------------------------------------
+[font]
+normal.family = "HackGen Console NF"
+bold.family = "HackGen Console NF"
+italic.family = "HackGen Console NF"
+bold_italic.family = "HackGen Console NF"
+size = 18.0
+builtin_box_drawing = true  # 罫線/ブロック文字を内蔵描画（tmux や lazygit の枠が繋がる）
+
+# ---------------------------------------------------------------------------
+# スクロール / 選択 / マウス / カーソル / ベル
+# ---------------------------------------------------------------------------
+[scrolling]
+history = 10000
+multiplier = 3
+
+[selection]
+save_to_clipboard = true
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"   # ダブルクリック選択の区切り文字
+
+[mouse]
+hide_when_typing = true
+
+[cursor]
+style = { shape = "Block", blinking = "On" }
+blink_interval = 600
+blink_timeout = 0        # 0 = 点滅を止めない
+unfocused_hollow = true  # 非フォーカス時は枠のみ表示
+
+[bell]
+duration = 0             # ビジュアルベル無効（画面がフラッシュしない）
+
+[terminal]
+# OSC 52: リモート(ssh/tmux)からのコピーは許可、クリップボードの読み取りは不許可
+osc52 = "OnlyCopy"
+
+# ---------------------------------------------------------------------------
+# 配色: Tokyo Night
+#   テーマを変えたい場合は以下の [colors.*] ブロックを差し替えるだけでOK
+# ---------------------------------------------------------------------------
+[colors]
+draw_bold_text_with_bright_colors = false
+
+[colors.primary]
+background = "#1a1b26"
+foreground = "#c0caf5"
+dim_foreground = "#a9b1d6"
+
+[colors.cursor]
+text = "#1a1b26"
+cursor = "#c0caf5"
+
+[colors.vi_mode_cursor]
+text = "#1a1b26"
+cursor = "#bb9af7"
+
+[colors.selection]
+text = "CellForeground"
+background = "#283457"
+
+[colors.normal]
+black = "#15161e"
+red = "#f7768e"
+green = "#9ece6a"
+yellow = "#e0af68"
+blue = "#7aa2f7"
+magenta = "#bb9af7"
+cyan = "#7dcfff"
+white = "#a9b1d6"
+
+[colors.bright]
+black = "#414868"
+red = "#f7768e"
+green = "#9ece6a"
+yellow = "#e0af68"
+blue = "#7aa2f7"
+magenta = "#bb9af7"
+cyan = "#7dcfff"
+white = "#c0caf5"
+
+[colors.search.matches]
+foreground = "#1a1b26"
+background = "#e0af68"
+
+[colors.search.focused_match]
+foreground = "#1a1b26"
+background = "#ff9e64"
+
+[colors.footer_bar]
+foreground = "#c0caf5"
+background = "#16161e"
+
+[colors.hints.start]
+foreground = "#1a1b26"
+background = "#e0af68"
+
+[colors.hints.end]
+foreground = "#1a1b26"
+background = "#a9b1d6"
+
+# ---------------------------------------------------------------------------
+# キーバインド（macOS 既定バインドへの追加分）
+# ---------------------------------------------------------------------------
+[keyboard]
+bindings = [
+  # Cmd+K: 画面クリア + スクロールバック破棄
+  { key = "K", mods = "Command", chars = "\u000C" },
+  { key = "K", mods = "Command", action = "ClearHistory" },
+
+  # macOS 流の行内移動を Emacs キーへ変換
+  { key = "Left",      mods = "Command", chars = "\u0001" },  # 行頭 (Ctrl+A)
+  { key = "Right",     mods = "Command", chars = "\u0005" },  # 行末 (Ctrl+E)
+  { key = "Backspace", mods = "Command", chars = "\u0015" },  # 行頭まで削除 (Ctrl+U)
+
+  # 単語単位の移動 / 削除
+  { key = "Left",      mods = "Alt", chars = "\u001Bb" },
+  { key = "Right",     mods = "Alt", chars = "\u001Bf" },
+  { key = "Backspace", mods = "Alt", chars = "\u001B\u007F" },
+]

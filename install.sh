@@ -125,11 +125,12 @@ mkdir -p "$LOCAL_BIN_DIR"
 create_symlink ".zshrc" "$HOME_DIR/.zshrc"
 
 # ~/.config配下のアプリケーション設定
-create_symlink "ghostty" "$CONFIG_DIR/ghostty"
-create_symlink "mise"    "$CONFIG_DIR/mise"
-create_symlink "zellij"  "$CONFIG_DIR/zellij"
-create_symlink "helix"   "$CONFIG_DIR/helix"
-create_symlink "yazi"    "$CONFIG_DIR/yazi"
+create_symlink "alacritty" "$CONFIG_DIR/alacritty"
+create_symlink "ghostty"   "$CONFIG_DIR/ghostty"
+create_symlink "mise"      "$CONFIG_DIR/mise"
+create_symlink "zellij"    "$CONFIG_DIR/zellij"
+create_symlink "helix"     "$CONFIG_DIR/helix"
+create_symlink "yazi"      "$CONFIG_DIR/yazi"
 
 # Claude Code設定
 create_symlink "claude/CLAUDE.md"     "$CLAUDE_DIR/CLAUDE.md"

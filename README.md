@@ -8,7 +8,8 @@ macOS (Apple Silicon) 専用の開発環境設定
 dotfiles/
 ├── Brewfile          # Homebrew パッケージ定義
 ├── .zshrc            # シェル設定
-├── ghostty/          # ターミナル設定
+├── alacritty/        # ターミナル設定 (Alacritty)
+├── ghostty/          # ターミナル設定 (Ghostty)
 ├── helix/            # エディタ設定
 ├── zellij/           # マルチプレクサ設定
 ├── yazi/             # ファイラー設定
@@ -24,7 +25,7 @@ dotfiles/
 |---------|--------|------|
 | パッケージ管理 | Homebrew + mise | システムツールと開発ツールの管理 |
 | シェル | Zsh + Zinit + pure | プラグイン管理とプロンプト |
-| ターミナル | Ghostty | GPU accelerated terminal |
+| ターミナル | Ghostty / Alacritty | GPU accelerated terminal |
 | エディタ | Helix | モーダルエディタ |
 | マルチプレクサ | Zellij | ターミナル分割・セッション管理 |
 | ファイラー | Yazi | ターミナルファイルマネージャー |
@@ -60,6 +61,13 @@ tap "laishulu/homebrew"  # macism用のリポジトリ
 brew "helix"             # CLIツール
 cask "ghostty"           # GUIアプリ
 ```
+
+### alacritty/
+
+- `alacritty.toml` - Alacritty 本体の設定（ウィンドウ・フォント・配色・キーバインド）
+
+配色は Tokyo Night を `[colors.*]` に直接記述。テーマを変える場合はこのブロックを差し替える。
+`option_as_alt = "OnlyLeft"` で左 Option のみ Alt/Meta 扱いにし、右 Option は記号入力用に温存。
 
 ### mise/config.toml
 

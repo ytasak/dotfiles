@@ -13,6 +13,12 @@ zsh、開発ツールの設定を管理する個人用dotfilesリポジトリ。
 - **mise** - ツールバージョン管理（`.zshrc`で有効化）
 - **Zinit** - Zshプラグインマネージャー
 
+### Alacritty設定 (alacritty/)
+
+- 配色は Tokyo Night を `alacritty.toml` 内に直書き（外部テーマファイルなし）
+- `option_as_alt = "OnlyLeft"` で左 Option のみ Alt/Meta 扱い
+- `live_config_reload = true` のため、保存すると再起動なしで反映される
+
 ### Ghostty設定 (ghostty/)
 
 - `macos-option-as-alt = true` でOptionキーをAlt/Metaとして使用
