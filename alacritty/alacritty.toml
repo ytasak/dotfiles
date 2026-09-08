@@ -140,4 +140,9 @@ bindings = [
   { key = "Left",      mods = "Alt", chars = "\u001Bb" },
   { key = "Right",     mods = "Alt", chars = "\u001Bf" },
   { key = "Backspace", mods = "Alt", chars = "\u001B\u007F" },
+
+  # Shift+Enter で ESC+CR を送る（Meta+Enter 相当）
+  #   端末は Shift+Enter と Enter を区別できず両方 CR になるため、
+  #   Claude Code 等の TUI で改行を入れるには明示的な変換が必要
+  { key = "Return", mods = "Shift", chars = "\u001B\u000D" },
 ]
