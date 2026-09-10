@@ -40,15 +40,9 @@ zsh、開発ツールの設定を管理する個人用dotfilesリポジトリ。
   `~/.claude/hooks/herdr-agent-state.sh` が担う（herdr が管理するファイルなので
   直接編集しない）
 
-### Zellij設定 (zellij/)
-
-- カスタムキーバインド（vim風）
-- IDEレイアウト（helix + claude）
-
 ### Helix設定 (helix/)
 
-- `Ctrl+y` でyaziファイルピッカーを起動
-- zellij連携スクリプト
+- ファイルピッカーは helix 標準の `space+f` を使う
 
 ## セットアップ
 

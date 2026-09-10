@@ -128,7 +128,6 @@ create_symlink ".zshrc" "$HOME_DIR/.zshrc"
 create_symlink "alacritty" "$CONFIG_DIR/alacritty"
 create_symlink "ghostty"   "$CONFIG_DIR/ghostty"
 create_symlink "mise"      "$CONFIG_DIR/mise"
-create_symlink "zellij"    "$CONFIG_DIR/zellij"
 create_symlink "helix"     "$CONFIG_DIR/helix"
 create_symlink "yazi"      "$CONFIG_DIR/yazi"
 

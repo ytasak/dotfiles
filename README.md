@@ -12,7 +12,6 @@ dotfiles/
 ├── ghostty/          # ターミナル設定 (Ghostty)
 ├── helix/            # エディタ設定
 ├── herdr/            # ターミナルワークスペース管理設定
-├── zellij/           # マルチプレクサ設定
 ├── yazi/             # ファイラー設定
 ├── mise/             # ツールバージョン管理
 ├── claude/           # Claude Code設定
@@ -28,7 +27,7 @@ dotfiles/
 | シェル | Zsh + Zinit + pure | プラグイン管理とプロンプト |
 | ターミナル | Ghostty / Alacritty | GPU accelerated terminal |
 | エディタ | Helix | モーダルエディタ |
-| マルチプレクサ | Zellij | ターミナル分割・セッション管理 |
+| ワークスペース管理 | herdr | AIエージェント向けターミナル管理 |
 | ファイラー | Yazi | ターミナルファイルマネージャー |
 
 ## セットアップ
@@ -81,7 +80,8 @@ cask "ghostty"           # GUIアプリ
 
 IME自動切り替え: `esc`押下時に`macism`で英語入力に切り替え。
 
-### zellij/
+### herdr/
 
-- `config.kdl` - キーバインド設定
-- `layouts/` - レイアウト定義（`ide`コマンドで使用）
+- `config.toml` - テーマ・UI設定
+- `~/.config/herdr` には socket・log などの実行時状態も置かれるため、
+  ディレクトリ全体ではなく `config.toml` 単体を symlink している

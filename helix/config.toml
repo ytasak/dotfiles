@@ -22,7 +22,6 @@ left = ["mode", "spinner", "file-base-name", "file-modification-indicator", "ver
 right = ["diagnostics", "selections", "position", "file-type"]
 
 [keys.normal]
-C-y = ":sh zellij run -n Yazi -c -f -x 10%% -y 10%% --width 80%% --height 80%% -- bash ~/.config/helix/yazi-picker.sh"
 R = ":reload"
 "esc" = ":sh macism com.apple.keylayout.ABC"
 
