@@ -38,9 +38,9 @@ autoload -Uz compinit && compinit
 # 補完で大文字小文字を区別しない
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
-# Prompt Theme: typewritten (singleline layout)
-export TYPEWRITTEN_PROMPT_LAYOUT="singleline"
-zinit light reobin/typewritten
+# Prompt Theme: pure
+zinit ice pick"async.zsh" src"pure.zsh"
+zinit light sindresorhus/pure
 
 # ============================================================================
 # PATH
