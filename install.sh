@@ -128,13 +128,20 @@ create_symlink ".zshrc" "$HOME_DIR/.zshrc"
 create_symlink "alacritty" "$CONFIG_DIR/alacritty"
 create_symlink "ghostty"   "$CONFIG_DIR/ghostty"
 create_symlink "mise"      "$CONFIG_DIR/mise"
-create_symlink "zellij"    "$CONFIG_DIR/zellij"
 create_symlink "helix"     "$CONFIG_DIR/helix"
 create_symlink "yazi"      "$CONFIG_DIR/yazi"
 
+# herdr設定
+# ~/.config/herdr には socket・log・session.json などの実行時状態も置かれるため、
+# ディレクトリ全体ではなく config.toml 単体をリンクする
+mkdir -p "$CONFIG_DIR/herdr"
+create_symlink "herdr/config.toml" "$CONFIG_DIR/herdr/config.toml"
+
 # Claude Code設定
-create_symlink "claude/CLAUDE.md"     "$CLAUDE_DIR/CLAUDE.md"
-create_symlink "claude/settings.json" "$CLAUDE_DIR/settings.json"
+create_symlink "claude/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
+# settings.json は追跡しない（.gitignore 参照）。
+# Claude Code が autoMode などを自動生成し、公開リポジトリに載ると
+# 利用環境の情報が流出するため、~/.claude/settings.json を直接編集する。
 mkdir -p "$CLAUDE_DIR/skills"
 create_symlink ".agents/skills/difit" "$CLAUDE_DIR/skills/difit"
 

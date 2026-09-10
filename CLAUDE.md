@@ -27,15 +27,22 @@ zsh、開発ツールの設定を管理する個人用dotfilesリポジトリ。
 
 - `macos-option-as-alt = true` でOptionキーをAlt/Metaとして使用
 
-### Zellij設定 (zellij/)
+### herdr設定 (herdr/)
 
-- カスタムキーバインド（vim風）
-- IDEレイアウト（helix + claude）
+- herdr はAIコーディングエージェント向けのターミナルワークスペース管理ツール
+- `config.toml` のみを symlink する。`~/.config/herdr` には socket・log・session.json
+  などの実行時状態も置かれるため、ディレクトリ全体をリンクしてはいけない
+- スキルはディスク上のファイルではなく `herdr --skill` で取得する方式。
+  セッションのスキル一覧には出てこない
+- herdr の pane 内で動いているかは `HERDR_ENV` で判定する。pane 外から
+  herdr セッションを操作してはいけない
+- Claude Code との連携は SessionStart フック
+  `~/.claude/hooks/herdr-agent-state.sh` が担う（herdr が管理するファイルなので
+  直接編集しない）
 
 ### Helix設定 (helix/)
 
-- `Ctrl+y` でyaziファイルピッカーを起動
-- zellij連携スクリプト
+- ファイルピッカーは helix 標準の `space+f` を使う
 
 ## セットアップ
 

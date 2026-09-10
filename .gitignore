@@ -2,5 +2,11 @@
 .zshrc.local
 **/.DS_Store
 
+# Claude Code の settings.json
+# autoMode などツールが自動生成する内容（利用環境のセキュリティ前提や
+# ローカルプロジェクトのパスを含む）が公開リポジトリに載るのを防ぐため追跡しない。
+# 実設定は ~/.claude/settings.json に直接置く。
+claude/settings.json
+
 # 外部からcloneするテーマ
 yazi/flavors/
