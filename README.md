@@ -11,6 +11,7 @@ dotfiles/
 ├── alacritty/        # ターミナル設定 (Alacritty)
 ├── ghostty/          # ターミナル設定 (Ghostty)
 ├── helix/            # エディタ設定
+├── herdr/            # ターミナルワークスペース管理設定
 ├── zellij/           # マルチプレクサ設定
 ├── yazi/             # ファイラー設定
 ├── mise/             # ツールバージョン管理

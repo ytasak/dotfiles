@@ -132,6 +132,12 @@ create_symlink "zellij"    "$CONFIG_DIR/zellij"
 create_symlink "helix"     "$CONFIG_DIR/helix"
 create_symlink "yazi"      "$CONFIG_DIR/yazi"
 
+# herdr設定
+# ~/.config/herdr には socket・log・session.json などの実行時状態も置かれるため、
+# ディレクトリ全体ではなく config.toml 単体をリンクする
+mkdir -p "$CONFIG_DIR/herdr"
+create_symlink "herdr/config.toml" "$CONFIG_DIR/herdr/config.toml"
+
 # Claude Code設定
 create_symlink "claude/CLAUDE.md"     "$CLAUDE_DIR/CLAUDE.md"
 create_symlink "claude/settings.json" "$CLAUDE_DIR/settings.json"
