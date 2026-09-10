@@ -18,21 +18,6 @@ source /opt/homebrew/opt/zinit/zinit.zsh
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
-zinit light-mode for \
-    zdharma-continuum/zinit-annex-as-monitor \
-    zdharma-continuum/zinit-annex-bin-gem-node \
-    zdharma-continuum/zinit-annex-patch-dl \
-    zdharma-continuum/zinit-annex-rust
-
-# ============================================================================
-# Zsh Plugins
-# ============================================================================
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-autosuggestions
-zinit light zsh-users/zsh-completions
-zinit light chrissicool/zsh-256color
-zinit light zdharma/history-search-multi-word
-
 # ============================================================================
 # Completion
 # ============================================================================
@@ -63,9 +48,26 @@ autoload -Uz compinit
 # 補完で大文字小文字を区別しない
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
+# ============================================================================
 # Prompt Theme: pure
+# ============================================================================
+# プラグインより先に読み込み、プロンプトを最速で表示する
 zinit ice pick"async.zsh" src"pure.zsh"
 zinit light sindresorhus/pure
+
+# ============================================================================
+# Zsh Plugins (turbo mode)
+# ============================================================================
+# wait lucid = プロンプト表示後に非同期ロード。
+# 同期ロードだと syntax-highlighting(3.5MB) と completions(5.2MB) の
+# 読み込み完了までプロンプトが出ず、初回起動の体感待ちが大きくなる。
+zinit wait lucid light-mode for \
+    zdharma-continuum/zinit-annex-bin-gem-node \
+    zsh-users/zsh-autosuggestions \
+    zsh-users/zsh-completions \
+    chrissicool/zsh-256color \
+    zdharma-continuum/history-search-multi-word \
+    zsh-users/zsh-syntax-highlighting
 
 # ============================================================================
 # PATH
@@ -78,6 +80,8 @@ export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
 # ============================================================================
 # mise manages: Node.js, Go, Python, Terraform, LSP servers
 # Configuration: ~/.config/mise/config.toml
+# --shims なら約120ms 速いが、cd 時の .mise.toml 自動反映と [env] の
+# 環境変数が効かなくなるため activate を維持する。
 eval "$(mise activate zsh)"
 
 # ============================================================================
