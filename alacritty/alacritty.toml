@@ -63,12 +63,20 @@ osc52 = "OnlyCopy"
 #   テーマを変えたい場合は以下の [colors.*] ブロックを差し替えるだけでOK
 # ---------------------------------------------------------------------------
 [colors]
-draw_bold_text_with_bright_colors = false
+# true にすると太字が bright 系の色で描画される。
+# これを false にしていると primary.bright_foreground が一切参照されず、
+# 太字が本文と完全同色（コントラスト比 1.00:1）になり強調が見えなくなる。
+draw_bold_text_with_bright_colors = true
 
 [colors.primary]
+#   背景に対するコントラスト比 / 隣接段との差
+#   dim  #737aa2  4.1:1  ┐ 1.98:1
+#   本文 #a9b1d6  8.1:1  ┘ 2.11:1
+#   太字 #ffffff 17.1:1  ┘
 background = "#1a1b26"
-foreground = "#c0caf5"
-dim_foreground = "#a9b1d6"
+foreground = "#a9b1d6"        # 本文（旧 #c0caf5 から一段落として太字との差を作る）
+bright_foreground = "#ffffff" # 太字。draw_bold_text_with_bright_colors = true のときのみ参照される
+dim_foreground = "#737aa2"    # 薄い字（旧設定は normal.white と同色で段が潰れていた）
 
 [colors.cursor]
 text = "#1a1b26"
@@ -93,13 +101,17 @@ cyan = "#7dcfff"
 white = "#a9b1d6"
 
 [colors.bright]
+# アクセント6色は normal から明度+25% / 彩度+45%（残り幅に対する比率）で持ち上げた値。
+# 元は normal と同一値だったため、色付きの太字が太字にしても色が変化しなかった。
+# 色差 ΔE=8.7〜14.2 で Gruvbox(14〜16) や Dracula(13) と同水準。背景比は全色 8.2:1 以上。
+# 明度のみ上げるとパステル化して色味が曖昧になるため彩度も併せて上げている。
 black = "#414868"
-red = "#f7768e"
-green = "#9ece6a"
-yellow = "#e0af68"
-blue = "#7aa2f7"
-magenta = "#bb9af7"
-cyan = "#7dcfff"
+red = "#fc96a9"
+green = "#b7eb7f"
+yellow = "#f2c583"
+blue = "#99b8fc"
+magenta = "#cbb1fc"
+cyan = "#9edbff"
 white = "#c0caf5"
 
 [colors.search.matches]

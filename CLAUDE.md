@@ -15,7 +15,11 @@ zsh、開発ツールの設定を管理する個人用dotfilesリポジトリ。
 
 ### Alacritty設定 (alacritty/)
 
-- 配色は Tokyo Night を `alacritty.toml` 内に直書き（外部テーマファイルなし）
+- 配色は Tokyo Night ベースを `alacritty.toml` 内に直書き（外部テーマファイルなし）
+- 太字の強調は `draw_bold_text_with_bright_colors = true` と `primary.bright_foreground` の
+  組み合わせで成立している。前者を false にすると後者が一切参照されなくなり、
+  太字が本文と同色になって強調が見えなくなるため、片方だけ変更しないこと
+- 同様に `colors.bright` のアクセント6色も上記フラグが true のときのみ効く
 - `option_as_alt = "OnlyLeft"` で左 Option のみ Alt/Meta 扱い
 - `live_config_reload = true` のため、保存すると再起動なしで反映される
 
