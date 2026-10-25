@@ -12,9 +12,21 @@ bindkey -v
 bindkey '^R' history-incremental-search-backward
 
 # ============================================================================
+# Homebrew
+# ============================================================================
+# macOS は /etc/paths.d/homebrew で PATH が通るが、Linux には同等の仕組みがない。
+# 以降で使う HOMEBREW_PREFIX をここで確定させる。
+# brew shellenv は毎回サブプロセスを起動するため、必要な変数だけ直接設定する。
+for p in /opt/homebrew /home/linuxbrew/.linuxbrew; do
+  [[ -d $p ]] && export HOMEBREW_PREFIX=$p && break
+done
+typeset -U path  # macOS では /etc/paths.d と重複するため除去
+path=($HOMEBREW_PREFIX/bin $HOMEBREW_PREFIX/sbin $path)
+
+# ============================================================================
 # Zinit - Plugin Manager
 # ============================================================================
-source /opt/homebrew/opt/zinit/zinit.zsh
+source $HOMEBREW_PREFIX/opt/zinit/zinit.zsh
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
@@ -73,7 +85,7 @@ zinit wait lucid light-mode for \
 # PATH
 # ============================================================================
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+export PATH="$HOMEBREW_PREFIX/opt/postgresql@17/bin:$PATH"
 
 # ============================================================================
 # Tool Version Management
