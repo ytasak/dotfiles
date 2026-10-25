@@ -31,7 +31,6 @@ if OS.mac?
   cask "font-hackgen"
   cask "font-hackgen-nerd"
   cask "alacritty"
-  cask "ghostty"
   cask "keyboardcleantool"
   cask "google-chrome"
   cask "raycast"
