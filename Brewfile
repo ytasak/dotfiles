@@ -1,5 +1,4 @@
-tap "laishulu/homebrew"
-
+# macOS / Linux 共通
 brew "arduino-cli"
 brew "helix"
 brew "jdtls"
@@ -20,15 +19,21 @@ brew "gh"
 brew "lazygit"
 brew "lazysql"
 brew "git-delta"
-cask "claude-code"
-cask "cmux"
-cask "codex"
-cask "font-hackgen"
-cask "font-hackgen-nerd"
-cask "alacritty"
-cask "ghostty"
-cask "keyboardcleantool"
-brew "macism"
-cask "google-chrome"
-cask "raycast"
-cask "slack"
+
+# macOS のみ（cask は Linux 非対応）
+if OS.mac?
+  tap "laishulu/homebrew"
+  brew "macism"
+
+  cask "claude-code"
+  cask "cmux"
+  cask "codex"
+  cask "font-hackgen"
+  cask "font-hackgen-nerd"
+  cask "alacritty"
+  cask "ghostty"
+  cask "keyboardcleantool"
+  cask "google-chrome"
+  cask "raycast"
+  cask "slack"
+end
