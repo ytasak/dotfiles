@@ -1,6 +1,6 @@
 # Dotfiles
 
-macOS (Apple Silicon) / Linux (Fedora) 向けの開発環境設定
+macOS (Apple Silicon) / Linux 向けの開発環境設定
 
 ## 構成
 
@@ -31,7 +31,7 @@ mkdir -p ~/develop && cd ~/develop
 git clone https://github.com/ytasak/dotfiles.git
 cd dotfiles
 
-# 2. インストール（Linux では dnf 実行時に sudo パスワードを求められる）
+# 2. インストール（Linux ではパッケージ導入時に sudo パスワードを求められる）
 ./install.sh
 
 # 3. (オプション) ローカル設定
@@ -44,7 +44,17 @@ chmod 600 ~/.ssh/config.local
 exec zsh
 ```
 
-### Fedora で手動インストールが必要なもの
+### Linux での事前準備
+
+`install.sh` は dnf がある環境（Fedora 等）では以下を自動で入れる。
+それ以外のディストリビューションでは、各パッケージマネージャーで事前に入れておく。
+
+- Homebrew の前提パッケージ（ビルドツール一式、`procps`、`curl`、`file`、`git`）
+  ※ ディストリビューションごとのパッケージ名は [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux#requirements) を参照
+- `zsh`
+- `alacritty`
+
+### Linux で手動インストールが必要なもの
 
 Brewfile の `cask` は macOS 専用のため、以下は個別に入れる。
 
