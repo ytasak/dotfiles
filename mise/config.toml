@@ -32,7 +32,6 @@ sqlc = "latest"
 task = "latest"
 
 # CLI tools
-"1password-cli" = "latest"
 tree-sitter = "latest"
 atlas = "latest"
 aws-cli = "latest"
