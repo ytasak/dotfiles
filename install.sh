@@ -71,7 +71,9 @@ if [[ "$OS" == "Linux" ]]; then
     echo ""
     echo "🐧 dnf でパッケージをインストールします（sudo が必要です）..."
     if command_exists dnf; then
-        sudo dnf install -y @development-tools procps-ng curl file git zsh alacritty
+        # langpack: .zshrc の LANG=ja_JP.UTF-8 と、postgresql の initdb が使う en_US.UTF-8 用
+        sudo dnf install -y @development-tools procps-ng curl file git zsh alacritty \
+            glibc-langpack-ja glibc-langpack-en
         info "dnf パッケージのインストール完了"
     else
         warn "dnf が見つかりません。Fedora 以外では前提パッケージを手動でインストールしてください"
