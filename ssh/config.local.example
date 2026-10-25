@@ -1,0 +1,7 @@
+# ローカルSSH設定（gitで管理しない）
+# このファイルを ~/.ssh/config.local にコピーして使用
+
+# Host example
+#     HostName example.com
+#     User myuser
+#     IdentityFile ~/.ssh/id_example

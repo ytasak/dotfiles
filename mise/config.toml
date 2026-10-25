@@ -1,0 +1,52 @@
+# mise configuration for development tools
+# https://mise.jdx.dev/configuration.html
+
+[tools]
+# Language runtimes
+node = "24.9.0"
+go = "latest"
+python = "3.12"
+uv = "latest"
+terraform = "latest"
+bun = "latest"
+pnpm = "latest"
+
+# LSP servers
+"npm:@vtsls/language-server" = "latest"
+lua-language-server = "latest"
+"npm:@biomejs/biome" = "latest"
+"npm:vscode-langservers-extracted" = "latest"
+"go:golang.org/x/tools/gopls" = "latest"
+"npm:pyright" = "latest"
+ruff = "latest"
+marksman = "latest"
+
+# Development tools
+"npm:@devcontainers/cli" = "latest"
+"npm:wrangler" = "latest"
+"go:github.com/air-verse/air" = "latest"
+"go:github.com/joho/godotenv/cmd/godotenv" = "latest"
+"go:github.com/go-delve/delve/cmd/dlv" = "latest"
+"go:github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen" = "latest"
+sqlc = "latest"
+task = "latest"
+
+# CLI tools
+"1password-cli" = "latest"
+tree-sitter = "latest"
+atlas = "latest"
+aws-cli = "latest"
+"aqua:99designs/aws-vault" = "latest"
+gcloud = "latest"
+jq = "latest"
+
+# Git hooks & security
+gitleaks = "latest"
+lefthook = "latest"
+
+# Formatters
+"npm:prettier" = "latest"
+opentofu = "1.12.5"
+
+[settings]
+experimental = true
