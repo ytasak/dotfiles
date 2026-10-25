@@ -1,2 +1,6 @@
+# ローカル設定ファイル（シークレット情報を含む）
 .zshrc.local
 **/.DS_Store
+
+# Claude Code のローカル設定（個人の許可設定などを含む）
+.claude/settings.local.json
